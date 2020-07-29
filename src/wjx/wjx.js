@@ -6,33 +6,33 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.0.1
+// @version     1.0.2
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	  ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      -
 // @description 2020/7/28 下午9:43:13
 // ==/UserScript==
 (function() {
-  let origin_answer = JSON.parse(GM_getResourceText('ANSWER') || '{}');
+	let origin_answer = JSON.parse(GM_getResourceText('ANSWER') || '{}');
 	let target = GM_getValue('ANSWER') || [];
-  
-  let merge = function (target, origin) {
-    origin.forEach(item => {
-      let temp = target.find(i => i.topicId === item.topicId);
-      if (temp) {
-        temp.answer = item.answer
-      } else {
-        target.push(item);
-      }
-    });
-    return target;
-  }
-  
-  console.log('target', target.length)
-  console.log('origin', origin_answer.length)
-  let ANSWER = merge(target, origin_answer);
-  console.log('ANSWER', ANSWER.length);
-  
+
+	let merge = function(target, origin) {
+		origin.forEach(item => {
+			let temp = target.find(i => i.topicId === item.topicId);
+			if(temp) {
+				temp.answer = item.answer
+			} else {
+				target.push(item);
+			}
+		});
+		return target;
+	}
+
+	console.log('target', target.length)
+	console.log('origin', origin_answer.length)
+	let ANSWER = merge(target, origin_answer);
+	console.log('ANSWER', ANSWER.length);
+
 	let findAnswer = function(ans) {
 		ans = ans.replace(/\┋/g, '|');
 		if(ans === '对' || ans === '错') {
@@ -133,12 +133,15 @@
 	}
 	console.log(window.location.href)
 	let href = window.location.href;
-	if (href.indexOf('https://ks.wjx.top/wjx') > -1) {
+	if(href.indexOf('https://ks.wjx.top/wjx') > -1) {
 		// 答案页面
 		setTimeout(saveAnserByPage, 1000)
-	} else if (href.indexOf('https://ks.wjx.top/jq') > -1) {
+	} else if(href.indexOf('https://ks.wjx.top/jq') > -1) {
 		// 答题页面
 		setTimeout(answerTopic, 1000)
+	} else if(href.indexOf('https://sztaxnfbw.wjx.cn/user') > -1) {
+		// 答题页面
+		setTimeout(saveAnserByPage, 1000)
 	} else {
 		console.warn('地址有误！')
 	}
