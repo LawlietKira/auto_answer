@@ -5,15 +5,34 @@
 // @match       *://sztaxnfbw.wjx.cn/user/joinrelquery.aspx*
 // @grant       GM_getValue
 // @grant       GM_setValue
+// @grant       GM_getResourceText
 // @version     1.0
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
-// @resource 	ANSWERS https://my.cdn.com/some-text.txt
+// @resource 	  ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      -
-// @description 
+// @description 2020/7/28 下午9:43:13
 // ==/UserScript==
 (function() {
-	let ANSWER = GM_getValue('ANSWER') || [];
-	console.log('ANSWER', ANSWER);
+  let origin_answer = JSON.parse(GM_getResourceText('ANSWER') || '{}');
+	let target = GM_getValue('ANSWER') || [];
+  
+  let merge = function (target, origin) {
+    origin.forEach(item => {
+      let temp = target.find(i => i.topicId === item.topicId);
+      if (temp) {
+        temp.answer = item.answer
+      } else {
+        target.push(item);
+      }
+    });
+    return target;
+  }
+  
+  console.log('target', target.length)
+  console.log('origin', origin_answer.length)
+  let ANSWER = merge(target, origin_answer);
+  console.log('ANSWER', ANSWER.length);
+  
 	let findAnswer = function(ans) {
 		ans = ans.replace(/\┋/g, '|');
 		if(ans === '对' || ans === '错') {
