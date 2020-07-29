@@ -6,10 +6,10 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.0.3
+// @version     1.0.4
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
-// @resource 	  ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
-// @author      -
+// @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
+// @author      月丶基拉
 // @description 2020/7/28 下午9:43:13
 // ==/UserScript==
 (function() {
@@ -32,6 +32,11 @@
 	console.log('origin', origin_answer.length)
 	let ANSWER = merge(target, origin_answer);
 	console.log('ANSWER', ANSWER.length);
+//	console.log('ANSWER', JSON.stringify(ANSWER));
+
+	let findAnswerByTopicId = function(topicId) {
+		return ANSWER.find(item => item.topicId == topicId);
+	}
 
 	let findAnswer = function(ans) {
 		ans = ans.replace(/\┋/g, '|');
@@ -94,6 +99,9 @@
 				GM_setValue('ANSWER', ANSWER);
 				console.log(`更新答案${i+1}`, obj);
 			}
+			setTimeout(function() {
+				window.close();
+			}, 1000)
 		});
 	}
 
@@ -128,9 +136,10 @@
 				}
 			});
 		})
+		window.location.hash = '#submit_button'
 		setTimeout(function() {
-			//$('#submit_button').click()
-		}, random(3, 6))
+			$('#submit_button').click()
+		}, random(2, 4))
 	}
 	console.log(window.location.href)
 	let href = window.location.href;
@@ -146,4 +155,12 @@
 	} else {
 		console.warn('地址有误！')
 	}
+
+	//console.log('输入：topicId=123;查看存储数据')
+	//setInterval(function() {
+	//  if (typeof topicId !== 'undefined') {
+	//    console.log(`${topicId}:`, findAnswerByTopicId(topicId));
+	//    delete topicId;
+	//  }
+	//}, 3000);
 })();
