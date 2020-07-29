@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        问卷星答题助手-手动
+// @name        问卷星答题助手-自动
 // @namespace   wjx
 // @match       *://ks.wjx.top/*
 // @match       *://sztaxnfbw.wjx.cn/user/joinrelquery.aspx*
@@ -10,7 +10,7 @@
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      月丶基拉
-// @description 问卷星-手动
+// @description 2020/7/28 下午9:43:13
 // ==/UserScript==
 (function() {
 	let origin_answer = JSON.parse(GM_getResourceText('ANSWER') || '{}');
@@ -99,6 +99,9 @@
 				GM_setValue('ANSWER', ANSWER);
 				console.log(`更新答案${i+1}`, obj);
 			}
+			setTimeout(function() {
+				window.close();
+			}, 1000)
 		});
 	}
 
@@ -133,6 +136,10 @@
 				}
 			});
 		})
+		window.location.hash = '#submit_button'
+		setTimeout(function() {
+			$('#submit_button').click()
+		}, random(3, 7))
 	}
 	let href = window.location.href;
 	if(href.indexOf('https://ks.wjx.top/wjx') > -1) {
@@ -147,12 +154,4 @@
 	} else {
 		console.warn('地址有误！')
 	}
-
-	console.log('输入：topicId=123;查看存储数据')
-	setInterval(function() {
-	  if (typeof topicId !== 'undefined') {
-	    console.log(`${topicId}:`, findAnswerByTopicId(topicId));
-	    delete topicId;
-	  }
-	}, 3000);
 })();

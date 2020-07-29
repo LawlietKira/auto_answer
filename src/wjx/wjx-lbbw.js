@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        问卷星-练兵比武
+// @name        问卷星-练兵比武-自动点题目
 // @namespace   wjx
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @match       *://sztaxnfbw.wjx.cn/user/NewQListResult.aspx
