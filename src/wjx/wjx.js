@@ -6,7 +6,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.0
+// @version     1.0.1
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	  ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      -
@@ -135,10 +135,10 @@
 	let href = window.location.href;
 	if (href.indexOf('https://ks.wjx.top/wjx') > -1) {
 		// 答案页面
-		setTimeout(saveAnserByPage, 2000)
+		setTimeout(saveAnserByPage, 1000)
 	} else if (href.indexOf('https://ks.wjx.top/jq') > -1) {
 		// 答题页面
-		setTimeout(answerTopic, 2000)
+		setTimeout(answerTopic, 1000)
 	} else {
 		console.warn('地址有误！')
 	}
