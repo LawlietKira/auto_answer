@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name        WJX
+// @name        问卷星答题助手
 // @namespace   Violentmonkey Scripts
 // @match       *://ks.wjx.top/*
 // @match       *://sztaxnfbw.wjx.cn/user/joinrelquery.aspx*
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.0.2
+// @version     1.0.3
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	  ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      -
@@ -108,6 +108,7 @@
 				answer = ans.answer;
 				console.log(ans)
 			} else {
+				$this.attr('style', ($this.attr('style') || '') + ';background-color:antiquewhite;');
 				console.log(`${i + 1}题没有答案`)
 			}
 
