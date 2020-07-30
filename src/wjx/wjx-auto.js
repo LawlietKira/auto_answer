@@ -12,7 +12,7 @@
 // @author      月丶基拉
 // @description 自动/手动答题
 // ==/UserScript==
-(function() {
+(function(w) {
 	let AUTO = GM_getValue('AUTO') || '0';
 	let origin_answer = JSON.parse(GM_getResourceText('ANSWER') || '{}');
 	let target = GM_getValue('ANSWER') || [];
@@ -158,9 +158,12 @@
 			});
 		})
 		window.location.hash = '#submit_button'
-		setTimeout(function() {
-			$('#submit_button').click()
-		}, random(3, 5))
+
+		if(GM_getValue('AUTO') === '1') {
+			setTimeout(function() {
+				$('#submit_button').click()
+			}, random(3, 5))
+		}
 	}
 
 	let autoSelectTopic = function() {
@@ -169,6 +172,9 @@
 				$('#my_auto').val('0');
 				clearInterval(autoTopic);
 				return;
+			} else {
+				$('#my_auto').val('1');
+				autoSelectTopic()
 			}
 			if(!document.hidden) {
 				$('.again-box:eq(0)')[0].click();
@@ -182,10 +188,7 @@
 	let autoStart = function() {
 		// 如果AUTO == 1，开启自动答题
 		let href = window.location.href;
-		if(href.indexOf('https://ks.wjx.top/jq') > -1) {
-			// 答题页面
-			setTimeout(answerTopic, 1000)
-		} else if(href.indexOf('https://sztaxnfbw.wjx.cn/user/NewQListResult.aspx') > -1) {
+		if(href.indexOf('https://sztaxnfbw.wjx.cn/user/NewQListResult.aspx') > -1) {
 			// 选题页面
 			autoSelectTopic();
 		} else {
@@ -193,18 +196,49 @@
 		}
 	}
 
+	let monitoringAlert = function() {
+		let alertFun = w.alert;
+		alert = function(str) {
+			let strAudio = "<audio id='audioPlay' src='http://www.xmf119.cn/static/admin/sounds/notify.wav' hidden='true'>";
+			if($('body').find('#audioPlay').length <= 0) {
+				$('body').append(strAudio);
+			}
+			let audio = document.getElementById('audioPlay');
+			//浏览器支持 audion
+			audio.play();
+			setTimeout(function() {
+				alertFun(str)
+			}, 500)
+		}
+	}
+
+	let spaceCommit = function() {
+		$(document).keypress(function(e) {
+			if(e.keyCode == 32) {
+				$('#submit_button').click()
+			}
+		})
+	}
+
 	let start = function() {
 		// 创建菜单
 		createMenu();
+		// 绑定空格提交
+		spaceCommit();
+		// 监控alert事件
+//		monitoringAlert();
 
 		if(GM_getValue('AUTO') === '1') {
 			autoStart();
 		} else {
 			clearInterval(autoTopic)
 		}
-		// 不管是否自动答题，都要保存答案
+		// 不管是否自动答题，都要答题/保存答案
 		let href = window.location.href;
-		if(href.indexOf('https://ks.wjx.top/wjx') > -1) {
+		if(href.indexOf('https://ks.wjx.top/jq') > -1) {
+			// 答题页面
+			setTimeout(answerTopic, 1000)
+		} else if(href.indexOf('https://ks.wjx.top/wjx') > -1) {
 			// 答案页面
 			setTimeout(saveAnserByPage, 1000)
 		} else if(href.indexOf('https://sztaxnfbw.wjx.cn/user/joinrelquery.aspx') > -1) {
@@ -214,4 +248,4 @@
 	}
 
 	start()
-})();
+})(window);
