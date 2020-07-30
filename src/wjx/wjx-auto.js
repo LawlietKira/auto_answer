@@ -6,7 +6,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.1.0
+// @version     1.1.1
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      月丶基拉
@@ -42,7 +42,7 @@
 
 	let createMenu = function() {
 		let $menu = $(`
-      <div id="asd" style="z-index: 999;text-align: center; top: 20%;right: 20%;position: fixed;width: 136px;height: 100px;background-color: blanchedalmond;">
+      <div id="asd" style="z-index: 999;text-align: center; top: 20%;left: 48%;position: fixed;width: 136px;height: 100px;background-color: blanchedalmond;">
         <select id="my_auto" style="height: 25px;margin: auto 5px;border: solid 1px #D9D9D9;">
           <option value="0">手动答题</option>
           <option value="1" ${AUTO === '1' ? 'selected': ''}>自动答题</option>
