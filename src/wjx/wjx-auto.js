@@ -6,7 +6,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.1.1
+// @version     1.1.2
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      月丶基拉
@@ -172,9 +172,6 @@
 				$('#my_auto').val('0');
 				clearInterval(autoTopic);
 				return;
-			} else {
-				$('#my_auto').val('1');
-				autoSelectTopic()
 			}
 			if(!document.hidden) {
 				$('.again-box:eq(0)')[0].click();
