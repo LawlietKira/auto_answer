@@ -1,20 +1,23 @@
 // ==UserScript==
-// @name        问卷星答题助手-自动
+// @name        问卷星答题助手
 // @namespace   wjx
 // @match       *://ks.wjx.top/*
-// @match       *://sztaxnfbw.wjx.cn/user/joinrelquery.aspx*
+// @match       *://sztaxnfbw.wjx.cn/user/*
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.0.5
+// @version     1.0.0
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      月丶基拉
-// @description 2020/7/28 下午9:43:13
+// @description 自动/手动答题
 // ==/UserScript==
 (function() {
+	let AUTO = GM_getValue('AUTO') || '0';
 	let origin_answer = JSON.parse(GM_getResourceText('ANSWER') || '{}');
 	let target = GM_getValue('ANSWER') || [];
+	// 自动选题的id
+	let autoTopic = 0;
 
 	let merge = function(target, origin) {
 		origin.forEach(item => {
@@ -32,10 +35,26 @@
 	console.log('origin', origin_answer.length)
 	let ANSWER = merge(target, origin_answer);
 	console.log('ANSWER', ANSWER.length);
-//	console.log('ANSWER', JSON.stringify(ANSWER));
 
 	let findAnswerByTopicId = function(topicId) {
 		return ANSWER.find(item => item.topicId == topicId);
+	}
+
+	let createMenu = function() {
+		let $menu = $(`
+      <div id="asd" style="z-index: 999;text-align: center; top: 20%;right: 20%;position: fixed;width: 136px;height: 100px;background-color: blanchedalmond;">
+        <select id="my_auto" style="height: 25px;margin: auto 5px;border: solid 1px #D9D9D9;">
+          <option value="0">手动答题</option>
+          <option value="1" ${AUTO === '1' ? 'selected': ''}>自动答题</option>
+        </select>
+      </div>`);
+		$('body').append($menu);
+		$('#my_auto').off('change').on('change', function() {
+			if($(this).val() === '1') {
+				autoStart();
+			}
+			GM_setValue('AUTO', $(this).val())
+		})
 	}
 
 	let findAnswer = function(ans) {
@@ -99,9 +118,11 @@
 				GM_setValue('ANSWER', ANSWER);
 				console.log(`更新答案${i+1}`, obj);
 			}
-			setTimeout(function() {
-				window.close();
-			}, 1000)
+			if(GM_getValue('AUTO') === '1') {
+				setTimeout(function() {
+					window.close();
+				}, 1000)
+			}
 		});
 	}
 
@@ -139,19 +160,58 @@
 		window.location.hash = '#submit_button'
 		setTimeout(function() {
 			$('#submit_button').click()
-		}, random(3, 7))
+		}, random(3, 5))
 	}
-	let href = window.location.href;
-	if(href.indexOf('https://ks.wjx.top/wjx') > -1) {
-		// 答案页面
-		setTimeout(saveAnserByPage, 1000)
-	} else if(href.indexOf('https://ks.wjx.top/jq') > -1) {
-		// 答题页面
-		setTimeout(answerTopic, 1000)
-	} else if(href.indexOf('https://sztaxnfbw.wjx.cn/user') > -1) {
-		// 答题页面
-		setTimeout(saveAnserByPage, 1000)
-	} else {
-		console.warn('地址有误！')
+
+	let autoSelectTopic = function() {
+		autoTopic = setInterval(function() {
+			if((GM_getValue('AUTO') || '0') === '0') {
+				$('#my_auto').val('0');
+				clearInterval(autoTopic);
+				return;
+			}
+			if(!document.hidden) {
+				$('.again-box:eq(0)')[0].click();
+			}
+		}, 4000);
+		setTimeout(function() {
+			window.location.reload();
+		}, 3 * 60 * 1000)
 	}
+
+	let autoStart = function() {
+		// 如果AUTO == 1，开启自动答题
+		let href = window.location.href;
+		if(href.indexOf('https://ks.wjx.top/jq') > -1) {
+			// 答题页面
+			setTimeout(answerTopic, 1000)
+		} else if(href.indexOf('https://sztaxnfbw.wjx.cn/user/NewQListResult.aspx') > -1) {
+			// 选题页面
+			autoSelectTopic();
+		} else {
+			console.warn('地址有误！')
+		}
+	}
+
+	let start = function() {
+		// 创建菜单
+		createMenu();
+
+		if(GM_getValue('AUTO') === '1') {
+			autoStart();
+		} else {
+			clearInterval(autoTopic)
+		}
+		// 不管是否自动答题，都要保存答案
+		let href = window.location.href;
+		if(href.indexOf('https://ks.wjx.top/wjx') > -1) {
+			// 答案页面
+			setTimeout(saveAnserByPage, 1000)
+		} else if(href.indexOf('https://sztaxnfbw.wjx.cn/user/joinrelquery.aspx') > -1) {
+			// 答案页面
+			setTimeout(saveAnserByPage, 1000)
+		}
+	}
+
+	start()
 })();
