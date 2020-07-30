@@ -6,7 +6,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.0.0
+// @version     1.0.1
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      月丶基拉
