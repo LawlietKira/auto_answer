@@ -6,7 +6,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.1.4
+// @version     1.1.5
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      月丶基拉
@@ -43,7 +43,7 @@
     	let autoFindAnswerByTopicId = function () {
 		setInterval(function () {
 			if (typeof topicId !== 'undefined') {
-				findAnswerByTopicId(topicId);
+				console.log(findAnswerByTopicId(topicId));
 				delete topicId;
 			}
 		}, 2000);
