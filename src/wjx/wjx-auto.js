@@ -6,7 +6,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.1.3
+// @version     1.1.4
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      月丶基拉
@@ -40,6 +40,15 @@
 		return ANSWER.find(item => item.topicId == topicId);
 	}
 
+    	let autoFindAnswerByTopicId = function () {
+		setInterval(function () {
+			if (typeof topicId !== 'undefined') {
+				findAnswerByTopicId(topicId);
+				delete topicId;
+			}
+		}, 2000);
+	}
+	
 	let createMenu = function() {
 		let $menu = $(`
       <div id="asd" style="z-index: 999;text-align: center; top: 20%;left: 48%;position: fixed;width: 136px;height: 100px;background-color: blanchedalmond;">
@@ -242,6 +251,7 @@
 			// 答案页面
 			setTimeout(saveAnserByPage, 500)
 		}
+		autoFindAnswerByTopicId()
 	}
 
 	start()
