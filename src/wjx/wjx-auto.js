@@ -6,7 +6,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.1.6
+// @version     1.1.7
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      月丶基拉
@@ -40,10 +40,14 @@
 		return ANSWER.find(item => item.topicId == topicId);
 	}
 
+	let filterAnswerByTopicId = function(topicId) {
+		return ANSWER.filter(item => item.topicId == topicId);
+	}
+
     	let autoFindAnswerByTopicId = function () {
 		setInterval(function () {
 			if (typeof topicId !== 'undefined') {
-				console.log(findAnswerByTopicId(topicId));
+				console.log(filterAnswerByTopicId(topicId));
 				delete topicId;
 			}
 			if (typeof topic !== 'undefined') {
