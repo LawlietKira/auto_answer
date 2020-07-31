@@ -6,7 +6,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.1.7
+// @version     1.1.8
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      月丶基拉
@@ -53,6 +53,10 @@
 			if (typeof topic !== 'undefined') {
 				console.log(filterFromAnswer(topic));
 				delete topic;
+			}
+			if (typeof clearAnswer !== 'undefined') {
+				GM_setValue('ANSWER', '')
+				delete clearAnswer;
 			}
 		}, 2000);
 	}
