@@ -121,7 +121,7 @@
 			if(GM_getValue('AUTO') === '1') {
 				setTimeout(function() {
 					window.close();
-				}, 1000)
+				}, 500)
 			}
 		});
 	}
@@ -176,7 +176,7 @@
 			if(!document.hidden) {
 				$('.again-box:eq(0)')[0].click();
 			}
-		}, 4000);
+		}, 3000);
 		setTimeout(function() {
 			window.location.reload();
 		}, 3 * 60 * 1000)
