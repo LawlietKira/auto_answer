@@ -6,7 +6,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.1.2
+// @version     1.1.3
 // @require     https://code.jquery.com/jquery-3.5.1.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.json
 // @author      月丶基拉
@@ -237,10 +237,10 @@
 			setTimeout(answerTopic, 1000)
 		} else if(href.indexOf('https://ks.wjx.top/wjx') > -1) {
 			// 答案页面
-			setTimeout(saveAnserByPage, 1000)
+			setTimeout(saveAnserByPage, 500)
 		} else if(href.indexOf('https://sztaxnfbw.wjx.cn/user/joinrelquery.aspx') > -1) {
 			// 答案页面
-			setTimeout(saveAnserByPage, 1000)
+			setTimeout(saveAnserByPage, 500)
 		}
 	}
 
