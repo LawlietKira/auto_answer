@@ -13,9 +13,9 @@
 // @description 自动/手动答题
 // ==/UserScript==
 (function(w) {
-	let AUTO = GM_getValue('AUTO') || '0';
-	let origin_answer = JSON.parse(GM_getResourceText('ANSWER') || '{}');
-	let target = GM_getValue('ANSWER') || [];
+	let AUTO = GM_getValue('AUTO', '0');
+	let origin_answer = JSON.parse(GM_getResourceText('ANSWER', '[]'));
+	let target = GM_getValue('ANSWER', []);
 	// 自动选题的id
 	let autoTopic = 0;
 
@@ -197,7 +197,7 @@
 
 	let autoSelectTopic = function() {
 		autoTopic = setInterval(function() {
-			if((GM_getValue('AUTO') || '0') === '0') {
+			if((GM_getValue('AUTO',  '0')) === '0') {
 				$('#my_auto').val('0');
 				clearInterval(autoTopic);
 				return;
@@ -223,18 +223,18 @@
 	}
 
 	let monitoringAlert = function() {
-		let alertFun = w.alert;
+		let alertFun = alert;
+		let strAudio = "<audio id='audioPlay' src='http://www.xmf119.cn/static/admin/sounds/notify.wav' hidden='true'>";
+		if($('body').find('#audioPlay').length <= 0) {
+			$('body').append(strAudio);
+		}
 		alert = function(str) {
-			let strAudio = "<audio id='audioPlay' src='http://www.xmf119.cn/static/admin/sounds/notify.wav' hidden='true'>";
-			if($('body').find('#audioPlay').length <= 0) {
-				$('body').append(strAudio);
-			}
 			let audio = document.getElementById('audioPlay');
-			//浏览器支持 audion
+			//浏览器支持
 			audio.play();
 			setTimeout(function() {
 				alertFun(str)
-			}, 500)
+			}, 200)
 		}
 	}
 
@@ -251,10 +251,8 @@
 		createMenu();
 		// 绑定空格提交
 		spaceCommit();
-		// 监控alert事件
-//		monitoringAlert();
-
-		if(GM_getValue('AUTO') === '1') {
+		
+		if(GM_getValue('AUTO', '0') === '1') {
 			autoStart();
 		} else {
 			clearInterval(autoTopic)
@@ -264,6 +262,8 @@
 		if(href.indexOf('https://ks.wjx.top/jq') > -1) {
 			// 答题页面
 			setTimeout(answerTopic, 1000)
+			// 监控alert事件
+			monitoringAlert();
 		} else if(href.indexOf('https://ks.wjx.top/wjx') > -1) {
 			// 答案页面
 			setTimeout(saveAnserByPage, 500)
@@ -275,4 +275,4 @@
 	}
 
 	start()
-})(window);
+})();
