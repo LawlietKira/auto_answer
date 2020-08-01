@@ -6,13 +6,14 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.1.9
-// @require     https://code.jquery.com/jquery-3.5.1.min.js
+// @version     1.2.0
+// @require     https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js
 // @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.v1.1.9.json
 // @author      月丶基拉
 // @description 自动/手动答题
 // ==/UserScript==
-(function(w) {
+
+(function() {
 	let AUTO = GM_getValue('AUTO', '0');
 	let origin_answer = JSON.parse(GM_getResourceText('ANSWER', '[]'));
 	let target = GM_getValue('ANSWER', []);
@@ -223,18 +224,19 @@
 	}
 
 	let monitoringAlert = function() {
-		let alertFun = alert;
+		let alertFun = unsafeWindow.alert;
 		let strAudio = "<audio id='audioPlay' src='http://www.xmf119.cn/static/admin/sounds/notify.wav' hidden='true'>";
 		if($('body').find('#audioPlay').length <= 0) {
 			$('body').append(strAudio);
 		}
-		alert = function(str) {
+    
+		unsafeWindow.alert = function(str) {
 			let audio = document.getElementById('audioPlay');
 			//浏览器支持
 			audio.play();
 			setTimeout(function() {
 				alertFun(str)
-			}, 200)
+			}, 500)
 		}
 	}
 
@@ -271,6 +273,7 @@
 			// 答案页面
 			setTimeout(saveAnserByPage, 500)
 		}
+    
 		autoFindAnswerByTopicId()
 	}
 
