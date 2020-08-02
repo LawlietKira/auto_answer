@@ -6,9 +6,9 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.2.0
+// @version     1.2.1
 // @require     https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource 	ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.v1.1.9.json
+// @resource 	  ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.v1.1.9.json
 // @author      月丶基拉
 // @description 自动/手动答题
 // ==/UserScript==
@@ -17,6 +17,7 @@
 	let AUTO = GM_getValue('AUTO', '0');
 	let origin_answer = JSON.parse(GM_getResourceText('ANSWER', '[]'));
 	let target = GM_getValue('ANSWER', []);
+  let reloadTime = 3; // 每隔n分钟，刷新选题页面
 	// 自动选题的id
 	let autoTopic = 0;
 
@@ -45,7 +46,7 @@
 		return ANSWER.filter(item => item.topicId == topicId);
 	}
 
-    	let autoFindAnswerByTopicId = function () {
+  let autoFindAnswerByTopicId = function () {
 		setInterval(function () {
 			if (typeof topicId !== 'undefined') {
 				console.log(filterAnswerByTopicId(topicId));
@@ -61,6 +62,17 @@
 			}
 		}, 2000);
 	}
+
+  let getTargetScore = function() {
+    return +GM_getValue('TARGET_SCORE', '');
+  }
+  
+  // 判断当前分是否大于目标分
+  let isTarScoreLessCurScore = function () {
+    let cur_score = +jQuery('#ctl00_ContentPlaceHolder1_userInfoPC_spanPoint').text(),
+        target_score = getTargetScore();
+    return target_score !== 0 && cur_score > target_score;
+  }
 	
 	let createMenu = function() {
 		let $menu = $(`
@@ -69,6 +81,8 @@
           <option value="0">手动答题</option>
           <option value="1" ${AUTO === '1' ? 'selected': ''}>自动答题</option>
         </select>
+        <input id="my_score" placeholder="空表示无限制" value="${getTargetScore()}" style="width: 78px;margin-top: 5px;height: 25px;">
+        <div id="my_tip" style="color:red; display: ${isTarScoreLessCurScore() ? 'block': 'none'};">当前分大于分，自动停止</div>
       </div>`);
 		$('body').append($menu);
 		$('#my_auto').off('change').on('change', function() {
@@ -76,7 +90,15 @@
 				autoStart();
 			}
 			GM_setValue('AUTO', $(this).val())
-		})
+		});
+    $('#my_score').off('input').on('input', function() {
+      GM_setValue('TARGET_SCORE', $(this).val());
+      if (isTarScoreLessCurScore()) {
+        $('#my_tip').show();
+      } else {
+        $('#my_tip').hide();
+      }
+    })
 	}
 
 	let findAnswer = function(ans) {
@@ -198,18 +220,27 @@
 
 	let autoSelectTopic = function() {
 		autoTopic = setInterval(function() {
+      let cur_score = +jQuery('#ctl00_ContentPlaceHolder1_userInfoPC_spanPoint').text();
+      let target_score = getTargetScore();
+      // 如果关闭自动答题，取消定时器
 			if((GM_getValue('AUTO',  '0')) === '0') {
 				$('#my_auto').val('0');
 				clearInterval(autoTopic);
 				return;
 			}
+      // 如果目标分数小于当前分数，停止
+      if (isTarScoreLessCurScore()) {
+        $('#my_score').val(target_score);
+        $('my_tip').show();
+				return;
+      }
 			if(!document.hidden) {
 				$('.again-box:eq(0)')[0].click();
 			}
 		}, 3000);
 		setTimeout(function() {
 			window.location.reload();
-		}, 3 * 60 * 1000)
+		}, reloadTime * 60 * 1000)
 	}
 
 	let autoStart = function() {
@@ -225,7 +256,7 @@
 
 	let monitoringAlert = function() {
 		let alertFun = unsafeWindow.alert;
-		let strAudio = "<audio id='audioPlay' src='http://www.xmf119.cn/static/admin/sounds/notify.wav' hidden='true'>";
+		let strAudio = "<audio id='audioPlay' src='http://downsc.chinaz.net/Files/DownLoad/sound1/202001/12404.mp3' hidden='true'>";
 		if($('body').find('#audioPlay').length <= 0) {
 			$('body').append(strAudio);
 		}
@@ -236,7 +267,7 @@
 			audio.play();
 			setTimeout(function() {
 				alertFun(str)
-			}, 500)
+			}, 800)
 		}
 	}
 
@@ -273,7 +304,6 @@
 			// 答案页面
 			setTimeout(saveAnserByPage, 500)
 		}
-    
 		autoFindAnswerByTopicId()
 	}
 
