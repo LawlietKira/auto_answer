@@ -6,7 +6,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.2.1
+// @version     1.2.2
 // @require     https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js
 // @resource 	  ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.v1.1.9.json
 // @author      月丶基拉
@@ -14,10 +14,15 @@
 // ==/UserScript==
 
 (function() {
+  // 自动答题类型，0：手动答题；1：自动答题
 	let AUTO = GM_getValue('AUTO', '0');
 	let origin_answer = JSON.parse(GM_getResourceText('ANSWER', '[]'));
 	let target = GM_getValue('ANSWER', []);
   let reloadTime = 3; // 每隔n分钟，刷新选题页面
+  
+  let radio_rate = GM_getValue('RADIO_RATE', 100), // 单选成功率
+      checkbox_rate = GM_getValue('CHECKBOX_RATE', 100), // 复选成功率
+      judge_rate = GM_getValue('JUDGE_RATE', 100); // 判断成功率
 	// 自动选题的id
 	let autoTopic = 0;
 
@@ -63,26 +68,59 @@
 		}, 2000);
 	}
 
+  // 更新答题正确率
+  let updateRate = function () {
+    radio_rate = GM_getValue('RADIO_RATE', 100); // 单选成功率
+    checkbox_rate = GM_getValue('CHECKBOX_RATE', 100); // 复选成功率
+    judge_rate = GM_getValue('JUDGE_RATE', 100); // 判断成功率
+    
+    $('#my_radio').val(radio_rate);
+    $('#my_checkbox').val(checkbox_rate);
+    $('#my_judge').val(judge_rate);
+  }
+  
   let getTargetScore = function() {
     return +GM_getValue('TARGET_SCORE', '');
   }
   
   // 判断当前分是否大于目标分
   let isTarScoreLessCurScore = function () {
-    let cur_score = +jQuery('#ctl00_ContentPlaceHolder1_userInfoPC_spanPoint').text(),
+    let cur_score = +$('#ctl00_ContentPlaceHolder1_userInfoPC_spanPoint').text(),
         target_score = getTargetScore();
     return target_score !== 0 && cur_score > target_score;
   }
 	
+  // 创建菜单
 	let createMenu = function() {
 		let $menu = $(`
-      <div id="asd" style="z-index: 999;text-align: center; top: 20%;left: 48%;position: fixed;width: 136px;height: 100px;background-color: blanchedalmond;">
-        <select id="my_auto" style="height: 25px;margin: auto 5px;border: solid 1px #D9D9D9;">
-          <option value="0">手动答题</option>
-          <option value="1" ${AUTO === '1' ? 'selected': ''}>自动答题</option>
-        </select>
-        <input id="my_score" placeholder="空表示无限制" value="${getTargetScore()}" style="width: 78px;margin-top: 5px;height: 25px;">
-        <div id="my_tip" style="color:red; display: ${isTarScoreLessCurScore() ? 'block': 'none'};">当前分大于分，自动停止</div>
+      <div id="asd" style="z-index: 999;text-align: center; top: 20%;left: 48%;position: fixed;width: 160px;background-color: rgba(127, 255, 216, 0.5);"> 
+        <table> 
+          <tbody>
+            <tr>
+              <td>答题类型</td>
+              <td><select id="my_auto" style="height: 25px; margin: auto 5px;border: solid 1px #D9D9D9;"> <option value="0">手动答题</option> <option value="1">自动答题</option> </select></td>
+            </tr> 
+            <tr>
+              <td>目标分数</td>
+              <td><input id="my_score" placeholder="空表示无限制" value="88500" style="width: 78px;margin-top: 5px;height: 25px;" /></td>
+            </tr> 
+            <tr> 
+              <td>判断成功率</td> 
+              <td><input id="my_judge" placeholder="100" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
+            </tr> 
+            <tr> 
+              <td>单选成功率</td> 
+              <td><input id="my_radioe" placeholder="100" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
+            </tr> 
+            <tr> 
+              <td>复选成功率</td> 
+              <td><input id="my_checkbox" placeholder="100" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
+            </tr>
+            <tr>
+              <td colspan="2"><div id="my_tip" style="color:red; display: block;">当前分大于分，自动停止</div></td>
+            </tr>
+          </tbody>
+        </table> 
       </div>`);
 		$('body').append($menu);
 		$('#my_auto').off('change').on('change', function() {
@@ -98,9 +136,41 @@
       } else {
         $('#my_tip').hide();
       }
-    })
+    });
+    
+    $('#my_judge').val(judge_rate);
+    $('#my_radio').val(radio_rate);
+    $('#my_checkbox').val(checkbox_rate);
+    // 判断成功率
+    $('#my_judge').off('input').on('input', function() {
+      let val = $(this).val();
+      if (val >= 100) {
+        val = 100;
+        $(this).val(100);
+      }
+      GM_setValue('JUDGE_RATE', val);
+    });
+    // 单选成功率
+    $('#my_radio').off('input').on('input', function() {
+      let val = $(this).val();
+      if (val >= 100) {
+        val = 100;
+        $(this).val(100);
+      }
+      GM_setValue('RADIO_RATE', val);
+    });
+    // 复选成功率
+    $('#my_checkbox').off('input').on('input', function() {
+      let val = $(this).val();
+      if (val >= 100) {
+        val = 100;
+        $(this).val(100);
+      }
+      GM_setValue('CHECKBOX_RATE', val);
+    });
 	}
 
+  // 根据答案，解析为答题选项
 	let findAnswer = function(ans) {
 		ans = ans.replace(/\┋/g, '|');
 		if(ans === '对' || ans === '错') {
@@ -135,10 +205,50 @@
 		return ans;
 	}
 
+  // 随机（i * 1000, j * 1000）
 	let random = function(i, j) {
 		let r = Math.random();
 		return Math.floor((i + r * (j - i)) * 1000);
 	}
+  
+  /**
+   * answers: 已知答案
+   * rate：正确率（0-100）
+   * 根据已知答案，判断是否答题
+   */
+  let isAnswer = function (answers) {
+    let type;
+    // 没有答案，随机答题
+    if (answers.length === 0) {
+      console.warn('没有答案，随机答题!');
+      return false;
+    } else if (answers.length >= 2) {
+      // 多选题
+      type = 'checkbox';
+    } else {
+      if (/[A-Z]/.test(answers[0])) {
+        // 单选
+        type = 'radio';
+      } else {
+        // 判断
+        type = 'jduge';
+      }
+    }
+    
+    let r = Math.floor(Math.random() * 100);
+    let flag = false;
+    if (type === 'radio') {
+      flag = r < radio_rate;
+    } else if (type === 'jduge') {
+      flag = r < judge_rate;
+    } else if (type === 'checkbox') {
+      flag = r < checkbox_rate;
+    } else {
+      flag = false;
+    }
+    console.log(type, r, `选${flag ? '正确' : '错误'}答案！`)
+    return flag;
+  }
 
 	let saveAnserByPage = function() {
 		$('.query__data-result .data__items').each((i, item) => {
@@ -178,6 +288,7 @@
 		});
 	}
 
+  // 自动答题
 	let answerTopic = function() {
 		$('#fieldset1 .div_question').each((i, item) => {
 			let $this = $(item);
@@ -192,17 +303,22 @@
 				$this.attr('style', ($this.attr('style') || '') + ';background-color:antiquewhite;');
 				console.log(`${i + 1}题没有答案`)
 			}
-
+      // 是否正确答题
+      let flag = isAnswer(answer);
+      if (!flag) {
+        $this.attr('style', ($this.attr('style') || '') + ';background-color:antiquewhite;');
+      }
 			let $ansers = $this.find('.ulradiocheck');
 			$ansers.find('li').each((j, it) => {
-				let $it = $(it);
-				let ans_txt = $it.find('label').text();
-				if(answer.indexOf(ans_txt.substr(0, 1)) > -1) {
-					$it.click();
-					console.log(ans_txt)
-				}
-				if(answer.length === 0) {
-					if(j === 0 || Math.random() < 0.5) {
+        let $it = $(it);
+        if (flag) {
+          let ans_txt = $it.find('label').text();
+          if(answer.indexOf(ans_txt.substr(0, 1)) > -1) {
+            $it.click();
+            console.log(ans_txt)
+          }
+        } else {
+					if(j <= 1 || Math.random() < 0.5) {
 						$it.click()
 						console.log(`随机选择${j + 1}`)
 					}
@@ -218,10 +334,15 @@
 		}
 	}
 
+  // 自动选题页面
 	let autoSelectTopic = function() {
 		autoTopic = setInterval(function() {
       let cur_score = +jQuery('#ctl00_ContentPlaceHolder1_userInfoPC_spanPoint').text();
       let target_score = getTargetScore();
+      
+      // 更新答题正确率
+      updateRate();
+      
       // 如果关闭自动答题，取消定时器
 			if((GM_getValue('AUTO',  '0')) === '0') {
 				$('#my_auto').val('0');
