@@ -19,7 +19,11 @@
 	let origin_answer = JSON.parse(GM_getResourceText('ANSWER', '[]'));
 	let target = GM_getValue('ANSWER', []);
   let reloadTime = 3; // 每隔n分钟，刷新选题页面
-  
+  let type_rate = {
+    radio: '单选',
+    checkbox: '复选',
+    judge: '判断'
+  };
   let radio_rate = GM_getValue('RADIO_RATE', 100), // 单选成功率
       checkbox_rate = GM_getValue('CHECKBOX_RATE', 100), // 复选成功率
       judge_rate = GM_getValue('JUDGE_RATE', 100); // 判断成功率
@@ -110,7 +114,7 @@
             </tr> 
             <tr> 
               <td>单选成功率</td> 
-              <td><input id="my_radioe" placeholder="100" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
+              <td><input id="my_radio" placeholder="100" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
             </tr> 
             <tr> 
               <td>复选成功率</td> 
@@ -246,7 +250,7 @@
     } else {
       flag = false;
     }
-    console.log(type, r, `选${flag ? '正确' : '错误'}答案！`)
+    console.warn(type_rate[type], r, `选${flag ? '正确' : '错误'}答案！`)
     return flag;
   }
 
