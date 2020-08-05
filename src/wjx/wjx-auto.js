@@ -98,30 +98,35 @@
 	let createMenu = function() {
 		let $menu = $(`
       <div id="asd" style="z-index: 999;text-align: center; top: 20%;left: 48%;position: fixed;width: 160px;background-color: rgba(127, 255, 216, 0.5);"> 
-        <table> 
+        <table style="color: black; margin: 5px auto;"> 
           <tbody>
             <tr>
               <td>答题类型</td>
-              <td><select id="my_auto" style="height: 25px; margin: auto 5px;border: solid 1px #D9D9D9;"> <option value="0">手动答题</option> <option value="1">自动答题</option> </select></td>
+              <td>
+                <select id="my_auto" style="height: 25px; margin: auto 5px;border: solid 1px #D9D9D9;"> 
+                  <option value="0">手动答题</option> 
+                  <option value="1"  ${AUTO === '1' ? 'selected': ''}>自动答题</option> 
+                </select>
+              </td>
             </tr> 
             <tr>
               <td>目标分数</td>
-              <td><input id="my_score" placeholder="空表示无限制" value="88500" style="width: 78px;margin-top: 5px;height: 25px;" /></td>
+              <td><input id="my_score" placeholder="空表示无限制" value="${getTargetScore()}" style="width: 78px;margin-top: 5px;height: 25px;" /></td>
             </tr> 
             <tr> 
               <td>判断成功率</td> 
-              <td><input id="my_judge" placeholder="100" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
+              <td><input id="my_judge" placeholder="100" value="${judge_rate}" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
             </tr> 
             <tr> 
               <td>单选成功率</td> 
-              <td><input id="my_radio" placeholder="100" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
+              <td><input id="my_radio" placeholder="100" value="${radio_rate}" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
             </tr> 
             <tr> 
               <td>复选成功率</td> 
-              <td><input id="my_checkbox" placeholder="100" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
+              <td><input id="my_checkbox" placeholder="100" value="${checkbox_rate}" style="width: 78px;margin-top: 5px;height: 25px;" /></td> 
             </tr>
             <tr>
-              <td colspan="2"><div id="my_tip" style="color:red; display: block;">当前分大于分，自动停止</div></td>
+              <td colspan="2"><div id="my_tip" style="color:red; display: ${isTarScoreLessCurScore() ? 'block': 'none'};">当前分大于目标分，自动停止</div></td>
             </tr>
           </tbody>
         </table> 
