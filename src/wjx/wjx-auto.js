@@ -6,9 +6,9 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
-// @version     1.2.2
+// @version     1.2.3
 // @require     https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource 	  ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.v1.1.9.json
+// @resource 	  ANSWER  https://raw.githubusercontent.com/LawlietKira/auto_answer/master/json/wjx/wjx.v1.2.0.json
 // @author      月丶基拉
 // @description 自动/手动答题
 // ==/UserScript==
